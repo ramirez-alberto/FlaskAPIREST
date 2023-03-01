@@ -34,8 +34,32 @@ class RecursoListarPublicaciones(Resource):
         db.session.add(nueva_publicacion)
         db.session.commit()
         return post_schema.dump(nueva_publicacion)
+class RecursoUnaPublicacion(Resource):
+    def get(self,id_publicacion):
+        publicacion = Publicacion.query.get_or_404(id_publicacion)
+        return post_schema.dump(publicacion)
+
+    def put(self,id_publicacion):
+        publicacion = Publicacion.query.get_or_404(id_publicacion)
+
+        if 'titulo' in request.json:
+            publicacion.titulo = request.json['titulo']
+        if 'contenido' in request.json:
+            publicacion.contenido = request.json['contenido']
+
+        db.session.commit()
+        return post_schema.dump(publicacion)
+    
+    def delete(self,id_publicacion):
+        publicacion = Publicacion.query.get_or_404(id_publicacion)
+
+        db.session.delete(publicacion)
+        db.session.commit()
+        return '',204
+
     
 api.add_resource(RecursoListarPublicaciones, '/publicaciones')
+api.add_resource(RecursoUnaPublicacion, '/publicaciones/<int:id_publicacion>')
 
 if __name__ == '__main__':
     app.run(debug=True)
